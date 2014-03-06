@@ -118,96 +118,95 @@ function url_name($s_string) {
 }
 
 // Transform Object it into a multidimensional array using recursion
-function object_array($obj) {
-	if (!is_array($obj) && !is_object($obj))
-		return $obj;
-	if (is_object($obj))
-		$obj = get_object_vars($obj);
-	return array_map(__FUNCTION__, $obj);
+function object_array($o_var) {
+	if (!is_array($o_var) && !is_object($o_var))
+		return $o_var;
+	if (is_object($o_var))
+		$o_var = get_object_vars($o_var);
+	return array_map(__FUNCTION__, $o_var);
 }
 
-function get_error_list($m_var) {
+function get_error_list($a_var) {
 	$s_construct = '<ul>';
-	foreach ($m_var as $index => $value) {
-		$s_construct .= '<li>' . $value . '</li>';
+	foreach ($a_var as $m_index => $m_value) {
+		$s_construct .= '<li>' . $m_value . '</li>';
 	}
 	$s_construct .= '</ul>';
 
 	return $s_construct;
 }
 
-function encode_items_utf8($array) {
-	foreach ($array as $key => $value) {
-		if (is_array($value)) {
-			$array[$key] = encode_items_utf8($value);
+function encode_items_utf8($a_var) {
+	foreach ($a_var as $m_key => $m_value) {
+		if (is_array($m_value)) {
+			$a_var[$m_key] = encode_items_utf8($m_value);
 		} else {
-			$array[$key] = mb_convert_encoding($value, 'UTF-8');
+			$a_var[$m_key] = mb_convert_encoding($m_value, 'UTF-8');
 		}
 	}
-	return $array;
+	return $a_var;
 }
 
-function array_unique_multidimensional($input) {
-	$serialized = array_map('serialize', $input);
-	$unique = array_unique($serialized);
-	return array_intersect_key($input, $unique);
+function array_unique_multidimensional($m_var) {
+	$a_serialized = array_map('serialize', $m_var);
+	$a_unique = array_unique($a_serialized);
+	return array_intersect_key($m_var, $a_unique);
 }
 
 function write_log($s_filename, $s_msg, $s_additional = '', $b_make_only_break = false) {
 
 	if (file_exists($s_filename)) {
-		$handle = fopen($s_filename, 'a'); 		// 'a'	-	Open for writing only; place the file pointer at the end of the file. If the file does not exist, attempt to create it.
+		$r_handle = fopen($s_filename, 'a'); 		// 'a'	-	Open for writing only; place the file pointer at the end of the file. If the file does not exist, attempt to create it.
 	} else {
-		$handle = fopen($s_filename, 'w');		// 'w'	-	Open for writing only; place the file pointer at the beginning of the file and truncate the file to zero length. If the file does not exist, attempt to create it.
+		$r_handle = fopen($s_filename, 'w');		// 'w'	-	Open for writing only; place the file pointer at the beginning of the file and truncate the file to zero length. If the file does not exist, attempt to create it.
 	}
 
 	if ($b_make_only_break === false) {
-		$str = $s_msg;
+		$s_str = $s_msg;
 
 		if ($s_additional != '') {
-			$str .= $s_additional;
+			$s_str .= $s_additional;
 		}
 
-		$str .= "\n";
+		$s_str .= "\n";
 	} else {
-		$str = "\n";
+		$s_str = "\n";
 	}
 
-	fwrite($handle, $str);
-	fclose($handle);
+	fwrite($r_handle, $s_str);
+	fclose($r_handle);
 
 }
 
 function code_timer_start() {
-	$d_code_timer_start = '';
-	$time = microtime();
-	$time = explode(" ", $time);
-	$time = $time[1] + $time[0];
-	$d_code_timer_start = $time;
+	$d_code_timer_start = 0.0;
+	$m_time = microtime();
+	$a_time = explode(' ', $m_time);
+	$d_code_timer_start = $a_time[1] + $a_time[0];
 	return $d_code_timer_start;
 }
 
 function code_timer_end($d_code_timer_start) {
-	$time = microtime();
-	$time = explode(" ", $time);
-	$time = $time[1] + $time[0];
-	$finish = $time;
-	$totaltime = ($finish - $d_code_timer_start);
-	$totaltime = number_format($totaltime, 2, ',', ' ') . ' seconds';
-	return $totaltime;
+	$m_time = microtime();
+	$a_time = explode(' ', $m_time);
+	$d_finish = $a_time[1] + $a_time[0];;
+	$d_totaltime = ($d_finish - $d_code_timer_start);
+	$d_totaltime = number_format($d_totaltime, 2, ',', ' ') . ' seconds';
+	return $d_totaltime;
 }
 
-function rappen($value) {
-	$tmp = (100 * round($value, 2)) % 5;
-	if ($tmp == 0) {
-		$chf = $value;
-	} else if ($tmp <= 2) {
-		$chf = ($value - $tmp / 100);
+// Round double to x,05 swiss raps
+function round_swiss($d_val) {
+	$t_precalc = (100 * round($d_val, 2)) % 5;
+	if($t_precalc == 0) {
+		$d_chf = $d_val;
+	} else if($t_precalc <= 2) {
+		$d_chf = ($d_val - $t_precalc / 100);
 	} else {
-		$chf = ($value + (5 - $tmp) / 100);
+		$d_chf = ($d_val + (5 - $t_precalc) / 100);
 	}
 
-	$rated = number_format((round(20 * $chf)) / 20, 2);
+	$s_formatted = number_format((round(20 * $d_chf)) / 20, 2);
 
-	return $rated;
+	return $s_formatted;
 }
